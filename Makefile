@@ -1,6 +1,6 @@
-NAME	= test
+NAME	= mysh
 
-CC	= gcc -g3
+CC	= gcc
 
 RM	= rm -f
 
@@ -15,8 +15,7 @@ SRCS	= ./get_next_line.c \
 	  ./my_put_functions.c \
 	  ./my_redirections.c \
 	  ./my_str_functions.c \
-	  ./my_str_to_word_array.c \
-	  ./test.c 
+	  ./my_str_to_word_array.c 
 
 OBJS	= $(SRCS:.c=.o)
 

@@ -33,16 +33,10 @@ void my_cd(int argc, char **argv, char **env)
 int my_is_keystr(char const *str)
 {
     char *keys[5] = { "cd", "exit", "setenv", "unsetenv", "env" };
-    int a[5] = { 0, 0, 0, 0, 0 };
-    int i;
 
-    for (i = 0; str[i] != '\0'; i = i + 1) {
-        for (int j = 0; j < 5; j = j + 1)
-            a[j] = ((keys[j][a[j]] == str[i]) ? (a[j] + 1) : (a[j]));
-    }
-    for (int b = 0; b < 5; b = b + 1) {
-        if (a[b] == i)
-            return (b);
+    for (int i = 0; str[i] != '\0'; i = i + 1) {
+        if (my_strcomp(keys[i], str) == 0)
+            return (i);
     }
     return (-1);
 }
@@ -66,7 +60,7 @@ char **my_chose_function(char **argv, char **env, int p)
             break;
         case 4: my_puttab(env);
             break;
-        default: my_exec(argv, argc, env, p);
+        default: my_exec(argv, env, p);
     }
     return (env);
 }
@@ -74,7 +68,6 @@ char **my_chose_function(char **argv, char **env, int p)
 int waiting_input(char **env)
 {
     char *line;
-    char **argv;
     char path[300];
     int end = 0;
 
@@ -83,29 +76,31 @@ int waiting_input(char **env)
         my_putstr(path);
         my_putstr("$>");
         line = get_next_line(0);
-        if (line == NULL)
+        if (line == NULL) {
+            my_putchar('\n');
             exit(0);
+        }
         else if (line[0] == 0)
             continue;
-        argv = my_exec_for(line);
+        my_exec_for(line, env);
         free(line);
     }
     return (0);
 }
 
-// int main(int ac, char **av, char **env)
-// {
-//     int check = 0;
-//     char **tab;
+int main(int ac, char **av, char **env)
+{
+    int check = 0;
+    char **tab;
 
-//     if (ac == 1) {
-//         tab = my_tabcpy(env);
-//         check = waiting_input(tab);
-//         free(tab);
-//         if (check == -1)
-//             return (0);
-//     }
-//     else
-//         return (84);
-//     return (0);
-// }
+    if (ac == 1) {
+        tab = my_tabcpy(env);
+        check = waiting_input(tab);
+        free(tab);
+        if (check == -1)
+            return (0);
+    }
+    else
+        return (84);
+    return (0);
+}

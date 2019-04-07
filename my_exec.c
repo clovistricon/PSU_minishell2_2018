@@ -71,7 +71,7 @@ int my_check_path(char const *buff, char const *arg)
     return (0);
 }
 
-int my_exec(char **prog_av, int len, char **env, int p)
+int my_exec(char **prog_av, char **env, int p)
 {
     int Child_status = 0;
     int Child_PID;
@@ -89,8 +89,8 @@ int my_exec(char **prog_av, int len, char **env, int p)
     Child_PID = ((p == 1) ? (fork()) : (0));
     if (Child_PID == 0)
         execve(prog_av[0], prog_av, env);
-    // if (p == 1)
-    //     waitpid(Child_PID, &Child_status, 0);
+    if (p == 1)
+        waitpid(Child_PID, &Child_status, 0);
     if (Child_status)
         check_err(Child_status);
     return (0);

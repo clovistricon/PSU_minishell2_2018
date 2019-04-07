@@ -6,17 +6,27 @@
 */
 #include "my.h"
 
-int check_pipe(char **av, int j, int out)
+int check_pipe(char **av, int j, int entry, int in)
 {
-    // if (av[j][0] == '>') {
-    //     if ((*av[j + 1] == '>') || (*av[j + 1] == '<') || (*av[j + 1] == '|'))
-    //     else if (j == 0)
-    // }
-    // else if ((av[j][0] == '|') && ((av[j + 1] == NULL) || (*av[j + 1] == '|')))
-    //     my_str_err(0);
-    // else {
-    // }
-    return (0);
+    int check = 0;
+
+    if (j == 0) {
+        my_str_err(2);
+        return (1);
+    }
+    if ((av[j][0] == '>') || (av[j][0] == '<')) {
+        if (av[j + 1] == NULL) {
+            my_str_err(2);
+            return (1);
+        }
+        if ((*av[j + 1] == '>') || (*av[j + 1] == '<') || (*av[j + 1] == '|'))
+            check = my_str_err(1);
+    }
+    else if ((av[j][0] == '|') && ((av[j + 1] == NULL) || (*av[j + 1] == '|')))
+        check = my_str_err(2);
+    if (entry > 1)
+        check = ((in == 1) ? (my_str_err(3)) : (my_str_err(4)));
+    return (check);
 }
 
 int get_keyboard(char const *str)
@@ -30,18 +40,14 @@ int get_keyboard(char const *str)
     return (0);
 }
 
-// int *my_redirections(char const **prog_av)
-// {
-//     int fd;
-//     int fdout = 1;
-//     int fdin = 0;
-
-//     if ((fd = my_put_out(prog_av[i], prog_av[i + 1], fdout)) == -1)
-//         return (84);
-//     else if ((fd = my_put_in(prog_av[i], prog_av[i + 1], fdin)) == -1)
-//         return (84);
-//     return (0);
-// }
+int my_redirections(char const *direction, char const *arg)
+{
+    if (my_put_out(direction, arg) == -1)
+        return (84);
+    else if (my_put_in(direction, arg) == -1)
+        return (84);
+    return (0);
+}
 
 int my_pipe(char **prog_av, char **env)
 {
@@ -53,11 +59,15 @@ int my_pipe(char **prog_av, char **env)
     pid = fork();
     if (pid == 0) {
         close(pipefd[0]);
+        dup2(pipefd[1], 1);
+        close(pipefd[1]);
         my_chose_function(prog_av, env, 0);
     }
     else {
         waitpid(pid, &status, 0);
         close(pipefd[1]);
+        dup2(pipefd[0], 0);
+        close(pipefd[0]);
     }
     return (0);
 }

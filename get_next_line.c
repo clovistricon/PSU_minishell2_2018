@@ -59,8 +59,9 @@ int my_end(char const *sbuff)
     return (0);
 }
 
-char *get_current_line(int fd, char *sbuff, int size, int *sizemax)
+char *get_current_line(int fd, char *sbuff, int *sizemax)
 {
+    int size;
     char *buff;
 
     while (my_end(sbuff) == 0) {
@@ -94,7 +95,7 @@ char *get_next_line(int fd)
         sbuff = my_strcpy(buff);
         free(buff);
     }
-    sbuff = get_current_line(fd, sbuff, size, &sizemax);
+    sbuff = get_current_line(fd, sbuff, &sizemax);
     if (sizemax == 0)
         return (NULL);
     else if ((size = my_end(sbuff)) < sizemax) {

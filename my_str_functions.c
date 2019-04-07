@@ -23,14 +23,18 @@ char *my_strncpy(char const *src, int len)
 
 int my_strcomp(char const *str1, char const *str2)
 {
+    int i = 0;
+
     if ((str1 == NULL) && (str2 == NULL))
         return (0);
     else if ((str1 == NULL) || (str2 == NULL))
         return (-1);
-    for (int i = 0; str1[i] != '\0'; i = i + 1) {
+    for (; str1[i] != '\0'; i = i + 1) {
         if (str1[i] != str2[i])
             return (-1);
     }
+    if (str2[i] != '\0')
+        return (-1);
     return (0);
 }
 
@@ -75,9 +79,9 @@ char **my_tabcat(char **src, char const *str)
 char **my_tabtrunc(char **src, int end)
 {
     char **tab = malloc(sizeof(char*) * (end + 1));
-    int i = 0;
 
-    while ((i < end) && (src[i]))
-        tab[i] = my_strcpy(src[i++]);
-    tab[i][0] = '\0';
+    for (int i = 0; (i < end) && (src[i]); i++)
+        tab[i] = my_strcpy(src[i]);
+    tab[end] = NULL;
+    return (tab);
 }
