@@ -53,9 +53,10 @@ int my_pipe(char **prog_av, char **env)
     pid = fork();
     if (pid == 0) {
         close(pipefd[0]);
-        my_chose_function(prog_av, env);
+        my_chose_function(prog_av, env, 0);
     }
     else {
+        waitpid(pid, &status, 0);
         close(pipefd[1]);
     }
     return (0);

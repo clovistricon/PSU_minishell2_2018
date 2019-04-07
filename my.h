@@ -47,8 +47,8 @@ char **my_setenv(int argc, char **argv, char **env);
 char **my_unsetenv(int argc, char **argv, char **env);
 int my_check_path(char const *buff, char const *arg);
 int check_err(int Child_status);
-int my_exec(char **prog_av, int len, char **env);
+int my_exec(char **prog_av, int len, char **env, int p);
 int my_is_keystr(char const *str);
-char **my_chose_function(char **argv, char **env);
+char **my_chose_function(char **argv, char **env, int p);
 int waiting_input(char **env);
 #endif

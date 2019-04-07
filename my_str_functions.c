@@ -58,10 +58,10 @@ char **my_tabcat(char **src, char const *str)
 
     if ((str == NULL) || (*str == 0))
         return (src);
-    if (src != NULL)
+    if (src)
         for (; src[len] != NULL; len = len + 1);
     dest = malloc(sizeof(char*) * (len + 2));
-    if (src != NULL) {
+    if (src) {
         while ((src[a] != NULL) && (*src[a] != '\0')) {
             dest[a] = my_strcpy(src[a]);
             a = a + 1;

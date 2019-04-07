@@ -71,9 +71,9 @@ int my_check_path(char const *buff, char const *arg)
     return (0);
 }
 
-int my_exec(char **prog_av, int len, char **env)
+int my_exec(char **prog_av, int len, char **env, int p)
 {
-    int Child_status;
+    int Child_status = 0;
     int Child_PID;
     char **path = my_getpath_in_env(env);
     char *buff = my_strcpy(prog_av[0]);
@@ -86,10 +86,11 @@ int my_exec(char **prog_av, int len, char **env)
     if (my_check_path(buff, prog_av[0]) == -1)
         return (1);
     prog_av[0] = my_strcpy(buff);
-    Child_PID = fork();
+    Child_PID = ((p == 1) ? (fork()) : (0));
     if (Child_PID == 0)
         execve(prog_av[0], prog_av, env);
-    waitpid(Child_PID, &Child_status, 0);
+    // if (p == 1)
+    //     waitpid(Child_PID, &Child_status, 0);
     if (Child_status)
         check_err(Child_status);
     return (0);

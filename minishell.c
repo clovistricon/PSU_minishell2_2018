@@ -47,7 +47,7 @@ int my_is_keystr(char const *str)
     return (-1);
 }
 
-char **my_chose_function(char **argv, char **env)
+char **my_chose_function(char **argv, char **env, int p)
 {
     int argc;
 
@@ -66,7 +66,7 @@ char **my_chose_function(char **argv, char **env)
             break;
         case 4: my_puttab(env);
             break;
-        default: my_exec(argv, argc, env);
+        default: my_exec(argv, argc, env, p);
     }
     return (env);
 }

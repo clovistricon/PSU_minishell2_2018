@@ -25,7 +25,7 @@ char ***my_get_exec_av(char const **prog_av)
         else
             exec_av[j] = my_tabcat(exec_av[j], prog_av[i]);
     }
-    exec_av[j + 1] = NULL;
+    exec_av[s + 1] = NULL;
     return (exec_av);
 }
 
@@ -59,20 +59,18 @@ int my_exec2(char **prog_av, char **env)
     int ac;
     int a = 0;
     int s = 0;
+    int i = 0;
     int pipefd[2];
 
-    for (int i = 0; exec_av[i] != NULL; i = i + 1) {
+    for (; exec_av[i + 1] != NULL; i = i + 1) {
         for (ac = 0; exec_av[i][ac] != NULL; ac = ac + 1);
         // for (s = s + ac; a < s; a = a + 1) {
         //     if ((prog_av[a][0] == '>') || (prog_av[a][0] == '<'))
         //         my_redirections(prog_av[a], prog_av[a + 1]);
         // }
-        if (exec_av[i + 1] == NULL)
-            my_chose_function(exec_av[i], env);
-        else {
-            my_pipe(exec_av[i], env);
-        }
+        my_pipe(exec_av[i], env);
     }
+    my_chose_function(exec_av[i], env, 1);
     return (0);
 }
 
