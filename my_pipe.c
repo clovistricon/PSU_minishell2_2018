@@ -80,8 +80,9 @@ int my_put_out(char const *direc, char const *file)
     int fd;
 
     if ((direc[0] == '>') && (direc[1] == '>')) {
-        if ((fd = open(file, O_CREAT | O_WRONLY | O_APPEND)) > 0)
-            dup2(fd, 1);
+        if ((fd = open(file, O_CREAT | O_WRONLY | O_APPEND)) == -1)
+            return (-1);
+        dup2(fd, 1);
     }
     else if (direc[0] == '>') {
         if ((fd = open(file, O_CREAT | O_WRONLY | O_TRUNC)) == -1)
@@ -98,7 +99,7 @@ int my_put_in(char const *direc, char const *file)
     if ((direc[0] == '<') && (direc[1] == '<'))
         get_keyboard(file);
     else if (direc[0] == '<') {
-        if ((fd = open(file, O_WRONLY)) == -1)
+        if ((fd = open(file, O_RDONLY)) == -1)
             return (-1);
         dup2(fd, 0);
     }
