@@ -12,11 +12,11 @@ char ***my_get_exec_av(char const **prog_av)
     int j = 0;
     int s = 0;
 
-    for (; prog_av[j] != NULL; j = j + 1) {
-        if (prog_av[j][0] == '|')
-            s = s + 1;
-    }
+    for (; prog_av[j] != NULL; j = j + 1)
+        s = ((prog_av[j][0] == '|') ? (s + 1) : (s));
     exec_av = malloc(sizeof(char**) * (s + 2));
+    for (int j0 = 0; j0 < (s + 2); j0++)
+        exec_av[j0] = NULL;
     for (int i = 0, j = 0; prog_av[i] != NULL; i = i + 1) {
         if (prog_av[i][0] == '|')
             j = j + 1;
@@ -25,7 +25,6 @@ char ***my_get_exec_av(char const **prog_av)
         else
             exec_av[j] = my_tabcat(exec_av[j], prog_av[i]);
     }
-    exec_av[s + 1] = NULL;
     return (exec_av);
 }
 
