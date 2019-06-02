@@ -99,8 +99,7 @@ int my_exec(char **prog_av, char **env, int p[2])
         execve(buff, prog_av, env);
         free(buff);
         free_tab(path);
-        dup2(p[0], 0);
-        dup2(p[1], 1);
+        reset_fd(p);
     }
     else
         waitpid(Child_PID, &Child_status, 0);

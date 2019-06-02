@@ -51,32 +51,23 @@ int my_check_cmd(char **prog_av)
     return (err);
 }
 
-int my_exec2(char **prog_av, char **env)
+int my_exec2(char **prog_av, char ***env)
 {
     char ***exec_av = my_get_exec_av(prog_av);
-    int ac;
-    int a = 0;
-    int s = 0;
     int i = 0;
     int init_pipe[2];
 
     init_pipe[0] = dup(0);
     init_pipe[1] = dup(1);
-    for (; exec_av[i + 1] != NULL; i = i + 1) {
-        // for (ac = 0; exec_av[i][ac] != NULL; ac = ac + 1);
-        // for (s = s + ac; a < s; a = a + 1) {
-        //     if ((prog_av[a][0] == '>') || (prog_av[a][0] == '<'))
-        //         my_redirections(prog_av[a], prog_av[a + 1]);
-        // }
+    for (; exec_av[i + 1] != NULL; i = i + 1)
         my_pipe(exec_av[i], env, init_pipe);
-    }
-    my_chose_function(exec_av[i], env, init_pipe);
+    (*env) = my_chose_function(exec_av[i], *env, init_pipe);
     dup2(init_pipe[0], 0);
     dup2(init_pipe[1], 1);
     return (0);
 }
 
-int my_exec_pipe(char *cmd, char **env)
+int my_exec_pipe(char *cmd, char ***env)
 {
     char **prog_av;
 
@@ -88,7 +79,7 @@ int my_exec_pipe(char *cmd, char **env)
     return (0);
 }
 
-int my_exec_for(char const *cmdline, char **env)
+int my_exec_for(char const *cmdline, char ***env)
 {
     char *cmd = my_strcpy(cmdline);
     char *tmp;

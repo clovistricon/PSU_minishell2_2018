@@ -83,11 +83,13 @@ int my_put_out(char const *direc, char const *file)
         if ((fd = open(file, O_CREAT | O_WRONLY | O_APPEND)) == -1)
             return (-1);
         dup2(fd, 1);
+        close(fd);
     }
     else if (direc[0] == '>') {
         if ((fd = open(file, O_CREAT | O_WRONLY | O_TRUNC)) == -1)
             return (-1);
         dup2(fd, 1);
+        close(fd);
     }
     return (0);
 }
@@ -102,6 +104,7 @@ int my_put_in(char const *direc, char const *file)
         if ((fd = open(file, O_RDONLY)) == -1)
             return (-1);
         dup2(fd, 0);
+        close(fd);
     }
     return (0);
 }

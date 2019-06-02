@@ -31,12 +31,11 @@ int check_pipe(char **av, int j, int entry, int in)
 
 int get_keyboard(char const *str)
 {
-    char *line = NULL;
+    char *line;
 
-    while (my_strcomp(line, str) == 0) {
-        my_putchar('>');
-        line = get_next_line(0);
-    }
+    my_putchar('?');
+    while (((line = get_next_line(0)) != NULL) && (my_strcomp(line, str) == 0))
+        my_putchar('?');
     return (0);
 }
 
@@ -49,7 +48,7 @@ int my_redirections(char const *direction, char const *arg)
     return (0);
 }
 
-int my_pipe(char **prog_av, char **env, int p[2])
+int my_pipe(char **prog_av, char ***env, int p[2])
 {
     int pid;
     int status;
@@ -61,7 +60,7 @@ int my_pipe(char **prog_av, char **env, int p[2])
         dup2(pipefd[1], 1);
         close(pipefd[0]);
         close(pipefd[1]);
-        my_chose_function(prog_av, env, p);
+        (*env) = my_chose_function(prog_av, *env, p);
         exit(0);
     }
     else {

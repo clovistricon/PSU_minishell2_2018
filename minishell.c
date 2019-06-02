@@ -43,12 +43,12 @@ int my_is_keystr(char const *str)
 
 char **my_chose_function(char **argv, char **env, int p[2])
 {
-    int argc;
+    int argc = my_get_argc(argv);
+    int check;
 
-    for (argc = 0; argv[argc]; argc = argc + 1);
     if (argc == 0)
         return (env);
-    switch(my_is_keystr(argv[0])) {
+    switch((check = my_is_keystr(argv[0]))) {
         case 0: my_cd(argc, argv, env);
             break;
         case 1: my_putstr("exit\n");
@@ -62,6 +62,7 @@ char **my_chose_function(char **argv, char **env, int p[2])
             break;
         default: my_exec(argv, env, p);
     }
+    (check == -1) ? (reset_fd(p)) : (0);
     return (env);
 }
 
@@ -82,7 +83,7 @@ int waiting_input(char **env)
         }
         else if (*line == 0)
             continue;
-        my_exec_for(line, env);
+        my_exec_for(line, &env);
         free(line);
     }
     return (0);

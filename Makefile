@@ -1,6 +1,6 @@
 NAME	= mysh
 
-CC	= gcc -g3
+CC	= gcc
 
 RM	= rm -f
 
@@ -10,6 +10,7 @@ SRCS	= ./get_next_line.c \
 	  ./my_errors.c \
 	  ./my_exec.c \
 	  ./my_exec2.c \
+	  ./my_get_argc.c \
 	  ./my_getnbr.c \
 	  ./my_pipe.c \
 	  ./my_put_functions.c \
