@@ -61,35 +61,48 @@ int check_err(int Child_status)
     return (0);
 }
 
-int my_check_path(char const *buff, char const *arg)
+char *my_check_path(char const *arg, char **path)
 {
-    if (access(buff, F_OK) == -1) {
+    char *buff = my_strcpy(arg);
+    int check;
+    int i = 0;
+
+    for (; (check = access(buff, X_OK)) == -1 && path[i] != NULL; i++) {
+        free(buff);
+        buff = my_strcat(path[i], "/");
+        buff = my_strcat(buff, arg);
+    }
+    for (i = 0; buff[i] != '\0'; i++) {
+        if (buff[i] == '/')
+            break;
+    }
+    if ((check == -1) || (buff[i] == '\0')) {
+        free(buff);
         my_putstr(arg);
         my_putstr(": Command not found.\n");
-        return (-1);
+        return (NULL);
     }
-    return (0);
+    return (buff);
 }
 
-int my_exec(char **prog_av, char **env, int p)
+int my_exec(char **prog_av, char **env, int p[2])
 {
     int Child_status = 0;
     int Child_PID;
     char **path = my_getpath_in_env(env);
-    char *buff = my_strcpy(prog_av[0]);
+    char *buff = my_check_path(prog_av[0], path);
 
-    for (int a = 0; access(buff, F_OK) == -1 && path[a] != NULL; a = a + 1) {
-        buff = my_strcpy(path[a]);
-        buff = my_strcat(buff, "/");
-        buff = my_strcat(buff, prog_av[0]);
-    }
-    if (my_check_path(buff, prog_av[0]) == -1)
+    if (buff == NULL)
         return (1);
-    prog_av[0] = my_strcpy(buff);
-    Child_PID = ((p == 1) ? (fork()) : (0));
-    if (Child_PID == 0)
-        execve(prog_av[0], prog_av, env);
-    if (p == 1)
+    Child_PID = fork();
+    if (Child_PID == 0) {
+        execve(buff, prog_av, env);
+        free(buff);
+        free_tab(path);
+        dup2(p[0], 0);
+        dup2(p[1], 1);
+    }
+    else
         waitpid(Child_PID, &Child_status, 0);
     if (Child_status)
         check_err(Child_status);

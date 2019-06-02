@@ -24,7 +24,7 @@ char *my_strcpy(char const *src)
     return (dest);
 }
 
-char *my_strcat(char *dest, char const *src)
+char *my_strcat(char const *dest, char const *src)
 {
     int len1 = 0;
     int len2 = 0;

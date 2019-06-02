@@ -4,6 +4,7 @@
 ** File description:
 ** functions related to environment
 */
+
 #include "my.h"
 
 char *my_get_in_env(char const *key, char **env)
@@ -47,10 +48,8 @@ char **my_getpath_in_env(char **env)
     char **pathlist;
     char *buff = my_get_in_env("PATH=", env);
 
-    if (buff == NULL) {
-        pathlist = malloc(sizeof(char*) * 2);
-        pathlist[0] = NULL;
-    }
+    if (buff == NULL)
+        return (NULL);
     else
         pathlist = my_str_to_pathlist(&buff[5]);
     return (pathlist);
@@ -58,25 +57,21 @@ char **my_getpath_in_env(char **env)
 
 char **my_unsetenv(int argc, char **argv, char **env)
 {
-    int len;
-    int a = 0;
     int j;
-    char **tmp;
+    char **tmp = NULL;
 
     if (argc < 2) {
         my_putstr("unsetenv: Too few arguments.\n");
         return (env);
     }
-    for (len = 0; env[len] != NULL; len = len + 1);
-    tmp = malloc(sizeof(char*) * len);
-    for (int i = 0; i < len; i = i + 1) {
+    for (int i = 0; env[i] != NULL; i = i + 1) {
         for (j = 0; argv[1][j] != '\0' && env[i][j] == argv[1][j]; j++);
         if ((argv[1][j] == '\0') && (env[i][j] == '='))
             continue;
         else
-            tmp[a++] = my_strcpy(env[i]);
+            tmp = my_tabcat_replace(tmp, env[i]);
     }
-    tmp[len] = NULL;
+    free_tab(env);
     return (tmp);
 }
 
@@ -87,17 +82,18 @@ char **my_setenv(int argc, char **argv, char **env)
 
     if (my_setenv_err(argc, argv, env) > 0)
         return (env);
-    elem = my_strcpy(argv[1]);
-    elem = my_strcat(elem, "=");
+    elem = my_strcat(argv[1], "=");
     if (argc == 3)
         elem = my_strcat(elem, argv[2]);
     for (int i = 0; env[i] != NULL; i = i + 1) {
         for (j = 0; argv[1][j] != '\0' && env[i][j] == argv[1][j]; j++);
         if ((argv[1][j] == '\0') && (env[i][j] == '=')) {
-            env[i] = my_strcpy(elem);
+            free(env[i]);
+            env[i] = elem;
             return (env);
         }
     }
-    env = my_tabcat(env, elem);
+    env = my_tabcat_replace(env, elem);
+    free(elem);
     return (env);
 }

@@ -7,22 +7,18 @@
 #include "my.h"
 
 
-char *my_get_cmd_pipe(char *str)
+char *my_get_cmd_pipe(char *str, int s1, int s2)
 {
-    char *cmd;
-    int s = 0;
+    char *cmd = malloc(sizeof(char) * (s2 + 1));
     int i1 = 0;
-    int i = 0;
 
-    for (; str[i] != '\0'; i++, s++)
-        s = ((str[i] == '|') ? (s + 2) : (s));
-    cmd = malloc(sizeof(char) * (s + 1));
-    for (int i2 = 0; i1 < s; i1++, i2++) {
-        if (i2 >= i)
+    for (int i2 = 0; i1 < s2; i1++, i2++) {
+        if (i2 >= s1)
             cmd[i1] = ' ';
         else if (str[i2] == '|') {
-            cmd = my_strcat(cmd, " | ");
-            i1 = i1 + 2;
+            cmd[i1++] = ' ';
+            cmd[i1++] = '|';
+            cmd[i1] = ' ';
         }
         else
             cmd[i1] = str[i2];
@@ -44,7 +40,9 @@ char *my_get_cmd(char const *str, int s1, int s2)
         else if ((str[i2] == '>') || (str[i2] == '<')) {
             cmd[i1++] = ' ';
             cmd[i1] = str[i2++];
-            ((cmd[i1++] == str[i2]) ? (cmd[i1] = str[i2]) : (cmd[i1] = ' '));
+            if (cmd[i1++] == str[i2])
+                cmd[i1++] = str[i2++];
+            cmd[i1] = ' ';
         }
         else
             cmd[i1] = str[i2];
@@ -68,8 +66,10 @@ char **my_str_to_cmd_arr(char *str)
             s = s + 2;
         }
     }
-    cmd = my_get_cmd(str, i, i + s);
-    cmd = my_get_cmd_pipe(cmd);
+    cmd = my_get_cmd(str, i, (i + s));
+    for (i = 0, s = 0; str[i] != '\0'; i++, s++)
+        s = ((str[i] == '|') ? (s + 2) : (s));
+    cmd = my_get_cmd_pipe(cmd, i, s);
     tab = my_str_to_word_array(cmd);
     free(cmd);
     return (tab);

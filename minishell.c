@@ -32,16 +32,16 @@ void my_cd(int argc, char **argv, char **env)
 
 int my_is_keystr(char const *str)
 {
-    char *keys[5] = { "cd", "exit", "setenv", "unsetenv", "env" };
+    static char *keys[6] = {"cd", "exit", "setenv", "unsetenv", "env", NULL};
 
-    for (int i = 0; str[i] != '\0'; i = i + 1) {
+    for (int i = 0; keys[i] != NULL; i = i + 1) {
         if (my_strcomp(keys[i], str) == 0)
             return (i);
     }
     return (-1);
 }
 
-char **my_chose_function(char **argv, char **env, int p)
+char **my_chose_function(char **argv, char **env, int p[2])
 {
     int argc;
 
@@ -77,10 +77,10 @@ int waiting_input(char **env)
         my_putstr("$>");
         line = get_next_line(0);
         if (line == NULL) {
-            my_putchar('\n');
+            my_putstr("exit\n");
             exit(0);
         }
-        else if (line[0] == 0)
+        else if (*line == 0)
             continue;
         my_exec_for(line, env);
         free(line);
@@ -96,7 +96,7 @@ int main(int ac, char **av, char **env)
     if (ac == 1) {
         tab = my_tabcpy(env);
         check = waiting_input(tab);
-        free(tab);
+        free_tab(tab);
         if (check == -1)
             return (0);
     }

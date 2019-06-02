@@ -58,48 +58,53 @@ int my_exec2(char **prog_av, char **env)
     int a = 0;
     int s = 0;
     int i = 0;
+    int init_pipe[2];
 
+    init_pipe[0] = dup(0);
+    init_pipe[1] = dup(1);
     for (; exec_av[i + 1] != NULL; i = i + 1) {
-        for (ac = 0; exec_av[i][ac] != NULL; ac = ac + 1);
-        for (s = s + ac; a < s; a = a + 1) {
-            if ((prog_av[a][0] == '>') || (prog_av[a][0] == '<'))
-                my_redirections(prog_av[a], prog_av[a + 1]);
-        }
-        my_pipe(exec_av[i], env);
+        // for (ac = 0; exec_av[i][ac] != NULL; ac = ac + 1);
+        // for (s = s + ac; a < s; a = a + 1) {
+        //     if ((prog_av[a][0] == '>') || (prog_av[a][0] == '<'))
+        //         my_redirections(prog_av[a], prog_av[a + 1]);
+        // }
+        my_pipe(exec_av[i], env, init_pipe);
     }
-    my_chose_function(exec_av[i], env, 1);
+    my_chose_function(exec_av[i], env, init_pipe);
+    dup2(init_pipe[0], 0);
+    dup2(init_pipe[1], 1);
     return (0);
 }
 
-int my_exec_pipe(char *cmdline, char **env, int i0, int i)
+int my_exec_pipe(char *cmd, char **env)
 {
-    char *cmd;
     char **prog_av;
 
-    cmd = my_strncpy(&cmdline[i0], (i - i0));
     prog_av = my_str_to_cmd_arr(cmd);
-    free(cmd);
     if (my_check_cmd(prog_av) != 0)
         return (-1);
     my_exec2(prog_av, env);
-    free(prog_av);
+    free_tab(prog_av);
     return (0);
 }
 
-int my_exec_for(char *cmdline, char **env)
+int my_exec_for(char const *cmdline, char **env)
 {
-    int i0 = 0;
-    int i = 0;
-    int check = 0;
+    char *cmd = my_strcpy(cmdline);
+    char *tmp;
 
-    for (; cmdline[i] != '\0'; i = i + 1) {
-        if (cmdline[i] == ';') {
-            check = my_exec_pipe(cmdline, env, i0, i);
-            i0 = i + 1;
+    for (int i = 0; cmd[i] != '\0'; i = i + 1) {
+        if (cmd[i] == ';') {
+            tmp = my_strncpy(cmd, i);
+            (my_str_is_empty(tmp) == 0) ? my_exec_pipe(tmp, env) : 0;
+            free(tmp);
+            cmd = my_str_replace(cmd, &cmd[i + 1]);
+            i = -1;
         }
-        if (check == -1)
-            return (check);
+        if ((cmd == NULL) || (*cmd == 0))
+            return (0);
     }
-    my_exec_pipe(cmdline, env, i0, i);
+    my_exec_pipe(cmd, env);
+    free(cmd);
     return (0);
 }

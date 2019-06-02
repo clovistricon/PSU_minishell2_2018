@@ -63,7 +63,7 @@ char *my_give_target(int argc, char **argv, char **env, char const *last)
             target = my_strcpy(last);
     }
     else {
-        if (check = opendir(argv[1])) {
+        if ((check = opendir(argv[1]))) {
             closedir(check);
             target = my_strcpy(argv[1]);
         }

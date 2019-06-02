@@ -49,7 +49,7 @@ int my_redirections(char const *direction, char const *arg)
     return (0);
 }
 
-int my_pipe(char **prog_av, char **env)
+int my_pipe(char **prog_av, char **env, int p[2])
 {
     int pid;
     int status;
@@ -58,15 +58,15 @@ int my_pipe(char **prog_av, char **env)
     pipe(pipefd);
     pid = fork();
     if (pid == 0) {
-        close(pipefd[0]);
         dup2(pipefd[1], 1);
+        close(pipefd[0]);
         close(pipefd[1]);
-        my_chose_function(prog_av, env, 0);
+        my_chose_function(prog_av, env, p);
+        exit(0);
     }
     else {
-        waitpid(pid, &status, 0);
-        close(pipefd[1]);
         dup2(pipefd[0], 0);
+        close(pipefd[1]);
         close(pipefd[0]);
     }
     return (0);

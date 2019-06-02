@@ -1,6 +1,6 @@
 NAME	= mysh
 
-CC	= gcc
+CC	= gcc -g3
 
 RM	= rm -f
 
@@ -15,6 +15,7 @@ SRCS	= ./get_next_line.c \
 	  ./my_put_functions.c \
 	  ./my_redirections.c \
 	  ./my_str_functions.c \
+	  ./my_str_functions2.c \
 	  ./my_str_to_word_array.c 
 
 OBJS	= $(SRCS:.c=.o)
