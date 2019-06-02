@@ -65,6 +65,7 @@ int my_pipe(char **prog_av, char **env, int p[2])
         exit(0);
     }
     else {
+        waitpid(pid, &status, 0);
         dup2(pipefd[0], 0);
         close(pipefd[1]);
         close(pipefd[0]);
